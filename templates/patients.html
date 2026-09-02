@@ -1,0 +1,96 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-4"><div class="stats-card"><div class="text-muted small mb-2">Registered patients</div><h3 class="fw-bold mb-0">{{ totals.registered }}</h3></div></div>
+  <div class="col-md-4"><div class="stats-card"><div class="text-muted small mb-2">Active records</div><h3 class="fw-bold mb-0">{{ totals.active }}</h3></div></div>
+  <div class="col-md-4"><div class="stats-card"><div class="text-muted small mb-2">Recently registered</div><h3 class="fw-bold mb-0">{{ totals.recent }}</h3></div></div>
+</div>
+
+<div class="table-shell mb-4">
+  <form method="get" class="row g-3 align-items-end">
+    <div class="col-lg-4">
+      <label class="form-label">Search by Patient ID, name, or phone</label>
+      <input class="form-control" name="search" value="{{ request.args.get('search', '') }}" placeholder="PAT001 / patient name / phone">
+    </div>
+    <div class="col-lg-2">
+      <label class="form-label">Blood group</label>
+      <select class="form-select" name="blood_group">
+        <option value="">All</option>
+        {% for item in blood_groups %}<option value="{{ item }}" {% if request.args.get('blood_group') == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-lg-2">
+      <label class="form-label">Min age</label>
+      <input class="form-control" type="number" name="min_age" value="{{ request.args.get('min_age', '') }}">
+    </div>
+    <div class="col-lg-2">
+      <label class="form-label">Max age</label>
+      <input class="form-control" type="number" name="max_age" value="{{ request.args.get('max_age', '') }}">
+    </div>
+    <div class="col-lg-2 d-grid">
+      <button class="btn btn-primary rounded-pill">Apply filters</button>
+    </div>
+  </form>
+</div>
+
+<div class="table-shell">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Contact</th>
+          <th>Blood Group</th>
+          <th>Age</th>
+          <th>Status</th>
+          <th>Last Updated</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for patient in patients.items %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ patient.full_name }}</div>
+            <div class="small text-muted">{{ patient.patient_id }}</div>
+          </td>
+          <td>
+            <div>{{ patient.phone }}</div>
+            <div class="small text-muted">{{ patient.email }}</div>
+          </td>
+          <td>{{ patient.profile.blood_group if patient.profile else '-' }}</td>
+          <td>{{ patient.age }}</td>
+          <td><span class="status-badge {{ 'status-confirmed' if patient.is_active else 'status-inactive' }}">{{ 'Active' if patient.is_active else 'Inactive' }}</span></td>
+          <td>{{ patient.profile.last_updated.strftime('%d %b %Y %H:%M') if patient.profile and patient.profile.last_updated else '-' }}</td>
+          <td class="text-end">
+            {% if patient.is_active %}
+            <form method="post" action="{{ url_for('deactivate_patient', patient_id=patient.id) }}" class="d-inline">
+              <button class="btn btn-sm btn-outline-danger rounded-pill">Soft delete</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No patients found for the selected filters.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if patients.pages > 1 %}
+  <nav class="mt-4">
+    <ul class="pagination justify-content-end mb-0">
+      {% for page_num in patients.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if page_num %}
+          <li class="page-item {% if page_num == patients.page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('patients_db', page=page_num, search=request.args.get('search',''), blood_group=request.args.get('blood_group',''), min_age=request.args.get('min_age',''), max_age=request.args.get('max_age','')) }}">{{ page_num }}</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">…</span></li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

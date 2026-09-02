@@ -1,0 +1,122 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="summary-card mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <h4 class="fw-bold mb-1">Welcome, {{ staff.name }}</h4>
+      <span class="role-pill"><i class="bi bi-person-badge"></i>{{ staff.role }}</span>
+      {% if staff.specialization %}<span class="text-muted small ms-2">{{ staff.specialization }}</span>{% endif %}
+    </div>
+    <div class="d-flex gap-2">
+      {% if session.get('role') in ['doctor', 'admin'] %}
+      <a href="{{ url_for('new_consultation') }}" class="btn btn-outline-primary rounded-pill px-4"><i class="bi bi-clipboard2-pulse me-1"></i>New Consultation</a>
+      <a href="{{ url_for('new_prescription') }}" class="btn btn-primary rounded-pill px-4"><i class="bi bi-capsule me-1"></i>New Prescription</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card"><div class="text-muted small mb-2">Total Patients</div><h3 class="fw-bold mb-0">{{ overview_stats.total_patients }}</h3></div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card"><div class="text-muted small mb-2">Total Appointments</div><h3 class="fw-bold mb-0">{{ overview_stats.total_appointments }}</h3></div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card"><div class="text-muted small mb-2">Today's Appointments</div><h3 class="fw-bold mb-0">{{ overview_stats.todays_appointments }}</h3></div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card"><div class="text-muted small mb-2">Total Consultations</div><h3 class="fw-bold mb-0">{{ overview_stats.total_consultations }}</h3></div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card"><div class="text-muted small mb-2">Total Prescriptions</div><h3 class="fw-bold mb-0">{{ overview_stats.total_prescriptions }}</h3></div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card"><div class="text-muted small mb-2">Upcoming Appointments</div><h3 class="fw-bold mb-0">{{ overview_stats.upcoming_appointments }}</h3></div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-7">
+    <div class="summary-card h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Recently registered patients</h5>
+        <a href="{{ url_for('patients_db') }}" class="btn btn-outline-primary btn-sm rounded-pill">View all</a>
+      </div>
+      {% if recent_patients %}
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead><tr><th>Patient</th><th>Contact</th><th>Registered</th><th class="text-end">Action</th></tr></thead>
+          <tbody>
+            {% for patient in recent_patients %}
+            <tr>
+              <td class="fw-semibold">{{ patient.full_name }}<div class="small text-muted">{{ patient.patient_id }}</div></td>
+              <td>{{ patient.phone }}</td>
+              <td>{{ patient.created_at.strftime('%d %b %Y') }}</td>
+              <td class="text-end"><a href="{{ url_for('patient_detail', patient_id=patient.patient_id) }}" class="btn btn-sm btn-outline-primary rounded-pill">View</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state"><i class="bi bi-people fs-1 text-primary"></i><h6 class="mt-3 mb-0">No patients registered yet</h6></div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-xl-5">
+    <div class="quick-card h-100">
+      <h5 class="fw-bold mb-3">Quick access</h5>
+      <div class="d-grid gap-2 mb-4">
+        <a href="{{ url_for('patients_db') }}" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-database me-2"></i>Patient Records</a>
+        <a href="{{ url_for('consultation_history') }}" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-clipboard2-pulse me-2"></i>Consultation History</a>
+        <a href="{{ url_for('prescription_history') }}" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-capsule me-2"></i>Prescription History</a>
+        <a href="{{ url_for('api_docs') }}" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-braces-asterisk me-2"></i>API Docs</a>
+        {% if session.get('role') == 'admin' %}
+        <a href="{{ url_for('security_center') }}" class="btn btn-outline-danger rounded-pill text-start"><i class="bi bi-shield-lock me-2"></i>Security Center</a>
+        {% endif %}
+      </div>
+
+      {% if session.get('role') == 'admin' and recent_security_events %}
+      <div class="small text-muted mb-2">Recent security events</div>
+      <ul class="list-unstyled summary-list mb-0">
+        {% for event in recent_security_events %}
+        <li class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold small">{{ event.event_type|replace('_',' ')|title }}</div>
+            <small class="text-muted">{{ event.created_at.strftime('%d %b, %I:%M %p') }}</small>
+          </div>
+          <span class="severity-badge severity-{{ event.severity }}">{{ event.severity }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="table-shell mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">Recent activity</h5>
+    {% if session.get('role') == 'admin' %}<a href="{{ url_for('security_center') }}" class="btn btn-outline-primary btn-sm rounded-pill">Full audit log</a>{% endif %}
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead><tr><th>Actor</th><th>Action</th><th>Resource</th><th>When</th></tr></thead>
+      <tbody>
+        {% for log in recent_audit_logs %}
+        <tr>
+          <td>{{ log.actor_label }}</td>
+          <td>{{ log.action|replace('_',' ')|title }}</td>
+          <td>{{ log.resource }}{% if log.resource_id %} · {{ log.resource_id }}{% endif %}</td>
+          <td class="small text-muted">{{ log.created_at.strftime('%d %b, %I:%M %p') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-muted py-4">No recent activity.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+{% block auth_content %}
+<div class="container auth-shell py-4 py-lg-5">
+  <div class="row g-4 align-items-stretch">
+    <div class="col-lg-6">
+      <div class="auth-hero d-flex flex-column justify-content-between" style="background: linear-gradient(140deg, #c4455d 0%, #ff8a8a 100%);">
+        <div>
+          <div class="brand-badge mb-4"><i class="bi bi-truck"></i></div>
+          <h1 class="display-6 fw-bold">Emergency ambulance, dispatched fast.</h1>
+          <p class="lead opacity-90 mt-3">Tell us where you are and we'll get an ambulance moving — no login required. You'll be able to track its status live.</p>
+        </div>
+        <div class="glass-card p-3 text-dark mt-4">
+          <div class="fw-bold mb-1"><i class="bi bi-telephone-fill text-danger me-1"></i>Prefer to call?</div>
+          <small class="text-muted">Emergency line: +1 (555) 010-9111 — available 24/7.</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="auth-card h-100 d-flex flex-column justify-content-center">
+        <div class="mb-4">
+          <h2 class="fw-bold mb-1">Request an ambulance</h2>
+          <p class="text-muted mb-0">Fill in a few details so the dispatch team can find you quickly.</p>
+        </div>
+        <form method="post" novalidate>
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input class="form-control form-control-lg" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <input class="form-control form-control-lg" name="phone" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Pickup Location</label>
+            <input class="form-control form-control-lg" name="location" placeholder="Address or landmark" required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Emergency Type</label>
+            <select class="form-select form-select-lg" name="emergency_type">
+              <option value="">Select (optional)</option>
+              <option>Accident / Trauma</option>
+              <option>Cardiac Emergency</option>
+              <option>Breathing Difficulty</option>
+              <option>Pregnancy / Labor</option>
+              <option>Other Medical Emergency</option>
+            </select>
+          </div>
+          <button class="btn btn-danger btn-lg w-100 rounded-pill fw-bold"><i class="bi bi-truck me-2"></i>Request Ambulance</button>
+        </form>
+        <div class="text-center mt-4 text-muted">
+          <a href="{{ url_for('index') }}" class="fw-semibold text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

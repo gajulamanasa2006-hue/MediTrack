@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prescription {{ prescription.prescription_id }} | MediTrack</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <div class="d-flex justify-content-end gap-2 mb-3 no-print">
+      <button class="btn btn-primary rounded-pill px-4" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print / Download</button>
+      <button class="btn btn-outline-secondary rounded-pill px-4" onclick="window.close()">Close</button>
+    </div>
+
+    <div class="rx-print-page">
+      <div class="rx-print-header d-flex justify-content-between align-items-start">
+        <div class="d-flex align-items-center gap-3">
+          <div class="brand-badge"><i class="bi bi-heart-pulse-fill"></i></div>
+          <div>
+            <h4 class="fw-bold mb-0">MediTrack</h4>
+            <small class="text-muted">Integrated Patient Care Management System</small>
+          </div>
+        </div>
+        <div class="text-end">
+          <div class="small text-muted">Prescription ID</div>
+          <div class="fw-bold text-primary fs-5">{{ prescription.prescription_id }}</div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="small text-muted">Patient Name</div>
+          <div class="fw-semibold">{{ prescription.patient.full_name }}</div>
+        </div>
+        <div class="col-md-3">
+          <div class="small text-muted">Patient ID</div>
+          <div class="fw-semibold">{{ prescription.patient_id }}</div>
+        </div>
+        <div class="col-md-3">
+          <div class="small text-muted">Age / Gender</div>
+          <div class="fw-semibold">{{ prescription.patient.age }} / {{ prescription.patient.gender }}</div>
+        </div>
+        <div class="col-md-6">
+          <div class="small text-muted">Doctor</div>
+          <div class="fw-semibold">{{ prescription.doctor }}</div>
+        </div>
+        <div class="col-md-6">
+          <div class="small text-muted">Consultation Date</div>
+          <div class="fw-semibold">{{ prescription.prescription_date.strftime('%d %b %Y') }}</div>
+        </div>
+      </div>
+
+      <div class="form-section-label mb-2">Medicines</div>
+      <table class="table table-bordered align-middle mb-4">
+        <thead>
+          <tr class="table-light">
+            <th>Medicine</th>
+            <th>Dosage</th>
+            <th>Frequency</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for med in prescription.items %}
+          <tr>
+            <td class="fw-semibold">{{ med.medicine_name }}</td>
+            <td>{{ med.dosage }}</td>
+            <td>{{ med.frequency }}</td>
+            <td>{{ med.duration }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="form-section-label mb-2">Instructions</div>
+      <ul class="mb-4">
+        {% for med in prescription.items %}
+        {% if med.instructions %}<li>{{ med.medicine_name }}: {{ med.instructions }}</li>{% endif %}
+        {% endfor %}
+      </ul>
+
+      <div class="d-flex justify-content-end">
+        <div class="rx-signature-line">Doctor Signature</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

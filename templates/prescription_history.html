@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold mb-1">Prescription history</h4>
+    <p class="text-muted mb-0">Every prescription generated across the practice.</p>
+  </div>
+  <a href="{{ url_for('new_prescription') }}" class="btn btn-primary rounded-pill px-4"><i class="bi bi-plus-lg me-1"></i>New Prescription</a>
+</div>
+
+<div class="table-shell mb-4">
+  <form method="get" class="row g-3 align-items-end">
+    <div class="col-lg-4">
+      <label class="form-label">Search by Prescription ID or patient</label>
+      <input class="form-control" name="search" value="{{ request.args.get('search', '') }}" placeholder="RX001 / patient name">
+    </div>
+    <div class="col-lg-3">
+      <label class="form-label">Filter by patient</label>
+      <select class="form-select" name="patient_id">
+        <option value="">All patients</option>
+        {% for p in all_patients %}<option value="{{ p.patient_id }}" {% if request.args.get('patient_id') == p.patient_id %}selected{% endif %}>{{ p.patient_id }} — {{ p.full_name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-lg-3">
+      <label class="form-label">Filter by doctor</label>
+      <select class="form-select" name="doctor">
+        <option value="">All doctors</option>
+        {% for doctor in doctors %}<option value="{{ doctor }}" {% if request.args.get('doctor') == doctor %}selected{% endif %}>{{ doctor }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-lg-2 d-grid">
+      <button class="btn btn-primary rounded-pill">Apply filters</button>
+    </div>
+  </form>
+</div>
+
+<div class="table-shell">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Prescription</th>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Consultation</th>
+          <th>Date</th>
+          <th>Medicines</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in prescriptions %}
+        <tr>
+          <td class="fw-semibold">{{ item.prescription_id }}</td>
+          <td>{{ item.patient.full_name }}<div class="small text-muted">{{ item.patient_id }}</div></td>
+          <td>{{ item.doctor }}</td>
+          <td>{{ item.consultation_id or '—' }}</td>
+          <td>{{ item.prescription_date.strftime('%d %b %Y') }}</td>
+          <td>{{ item.items|length }} item{{ 's' if item.items|length != 1 else '' }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('prescription_detail', prescription_id=item.prescription_id) }}" class="btn btn-sm btn-outline-primary rounded-pill">View</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No prescriptions found for the selected filters.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

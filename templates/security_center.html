@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="stats-card"><div class="text-muted small mb-2">Total Audit Events</div><h3 class="fw-bold mb-0">{{ summary.total_audit_events }}</h3></div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card"><div class="text-muted small mb-2">Total Security Events</div><h3 class="fw-bold mb-0">{{ summary.total_security_events }}</h3></div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card"><div class="text-muted small mb-2">High Severity Events</div><h3 class="fw-bold mb-0 text-danger">{{ summary.high_severity_events }}</h3></div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card"><div class="text-muted small mb-2">Failed Logins (24h)</div><h3 class="fw-bold mb-0">{{ summary.failed_logins_24h }}</h3></div>
+  </div>
+</div>
+
+<div class="tab-shell glass-card">
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link {% if active_tab == 'audit' %}active{% endif %}" href="{{ url_for('security_center', tab='audit') }}">Audit Logs</a></li>
+    <li class="nav-item"><a class="nav-link {% if active_tab == 'events' %}active{% endif %}" href="{{ url_for('security_center', tab='events') }}">Security Events</a></li>
+  </ul>
+
+  {% if active_tab == 'audit' %}
+  <form method="get" class="row g-3 align-items-end mb-4">
+    <input type="hidden" name="tab" value="audit">
+    <div class="col-lg-6">
+      <label class="form-label">Search by actor, action, or resource</label>
+      <input class="form-control" name="search" value="{{ search }}" placeholder="e.g. Dr. Amelia Carter / LOGIN / Prescription">
+    </div>
+    <div class="col-lg-2 d-grid">
+      <button class="btn btn-primary rounded-pill">Search</button>
+    </div>
+  </form>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Actor</th><th>Role</th><th>Action</th><th>Resource</th><th>IP Address</th><th>When</th></tr></thead>
+      <tbody>
+        {% for log in audit_logs %}
+        <tr>
+          <td class="fw-semibold">{{ log.actor_label }}</td>
+          <td><span class="role-pill">{{ log.actor_role }}</span></td>
+          <td>{{ log.action|replace('_',' ')|title }}</td>
+          <td>{{ log.resource or '—' }}{% if log.resource_id %} <span class="text-muted small">· {{ log.resource_id }}</span>{% endif %}</td>
+          <td class="small text-muted">{{ log.ip_address or '—' }}</td>
+          <td class="small text-muted">{{ log.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No audit events found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Event</th><th>Severity</th><th>Username</th><th>IP Address</th><th>Details</th><th>When</th></tr></thead>
+      <tbody>
+        {% for event in security_events %}
+        <tr>
+          <td class="fw-semibold">{{ event.event_type|replace('_',' ')|title }}</td>
+          <td><span class="severity-badge severity-{{ event.severity }}">{{ event.severity }}</span></td>
+          <td>{{ event.username or '—' }}</td>
+          <td class="small text-muted">{{ event.ip_address or '—' }}</td>
+          <td class="small text-muted">{{ event.details or '—' }}</td>
+          <td class="small text-muted">{{ event.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No security events recorded.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

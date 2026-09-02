@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-xl-4">
+    <div class="summary-card h-100">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <img class="profile-avatar" src="{{ photo_url }}" alt="Profile photo">
+        <div>
+          <h4 class="fw-bold mb-1">{{ patient.full_name }}</h4>
+          <div class="text-muted">{{ patient.patient_id }}</div>
+          <div class="text-muted small">Last updated {{ last_updated }}</div>
+        </div>
+      </div>
+      <div class="progress mb-2" style="height: 11px;"><div class="progress-bar bg-primary" style="width: {{ completion }}%"></div></div>
+      <div class="d-flex justify-content-between small mb-4"><span>Profile completion</span><strong>{{ completion }}%</strong></div>
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        {% if profile and profile.blood_group %}<span class="metric-pill"><i class="bi bi-droplet-half"></i>{{ profile.blood_group }}</span>{% endif %}
+        {% if profile and profile.bmi %}<span class="metric-pill"><i class="bi bi-speedometer2"></i>BMI {{ profile.bmi }}</span>{% endif %}
+        {% if profile and profile.oxygen_level %}<span class="metric-pill"><i class="bi bi-lungs"></i>SpO₂ {{ profile.oxygen_level }}%</span>{% endif %}
+      </div>
+      <div class="glass-card p-3 mb-3">
+        <div class="fw-bold mb-2">Quick medical summary</div>
+        <div class="small text-muted">Blood Pressure</div>
+        <div class="fw-semibold mb-2">{{ profile.blood_pressure or 'Not added yet' }}</div>
+        <div class="small text-muted">Current Medications</div>
+        <div class="fw-semibold mb-2">{{ profile.medications or 'Not added yet' }}</div>
+        <div class="small text-muted">Allergies</div>
+        <div class="fw-semibold">{{ profile.allergies or 'Not added yet' }}</div>
+      </div>
+      <div class="glass-card p-3">
+        <div class="fw-bold mb-2">Missing information</div>
+        {% if missing_fields %}
+          <div class="d-flex flex-wrap gap-2">
+            {% for field in missing_fields %}<span class="badge text-bg-danger-subtle text-danger-emphasis border border-danger-subtle">{{ field }}</span>{% endfor %}
+          </div>
+        {% else %}
+          <p class="text-success mb-0">All core profile fields are complete.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-8">
+    <div class="glass-card" id="profile-form">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h4 class="fw-bold mb-1">Medical profile</h4>
+          <p class="text-muted mb-0">Keep your medical information updated for a smoother care experience.</p>
+        </div>
+        <div class="qr-card py-2 px-3">
+          <div class="small text-muted">Patient QR</div>
+          {% if patient.qr_code_path %}<img src="{{ url_for('static', filename=patient.qr_code_path) }}" alt="QR Code" style="max-width:90px;">{% endif %}
+        </div>
+      </div>
+      <form method="post" enctype="multipart/form-data">
+        <div class="row g-3">
+          <div class="col-md-4"><label class="form-label">Blood Group</label><input class="form-control" name="blood_group" value="{{ profile.blood_group or '' }}"></div>
+          <div class="col-md-4"><label class="form-label">Height (cm)</label><input type="number" step="0.01" id="height" class="form-control" name="height" value="{{ profile.height or '' }}"></div>
+          <div class="col-md-4"><label class="form-label">Weight (kg)</label><input type="number" step="0.01" id="weight" class="form-control" name="weight" value="{{ profile.weight or '' }}"></div>
+          <div class="col-md-4"><label class="form-label">BMI</label><input id="bmi" class="form-control" name="bmi" value="{{ profile.bmi or '' }}" readonly></div>
+          <div class="col-md-4"><label class="form-label">Blood Pressure</label><input class="form-control" name="blood_pressure" value="{{ profile.blood_pressure or '' }}"></div>
+          <div class="col-md-4"><label class="form-label">Pulse Rate</label><input class="form-control" name="pulse_rate" value="{{ profile.pulse_rate or '' }}"></div>
+          <div class="col-md-4"><label class="form-label">Oxygen Saturation (SpO₂)</label><input class="form-control" name="oxygen_level" value="{{ profile.oxygen_level or '' }}"></div>
+          <div class="col-md-4"><label class="form-label">Emergency Contact Name</label><input class="form-control" name="emergency_contact_name" value="{{ profile.emergency_contact_name or '' }}"></div>
+          <div class="col-md-4"><label class="form-label">Emergency Contact Number</label><input class="form-control" name="emergency_contact_phone" value="{{ profile.emergency_contact_phone or '' }}"></div>
+          <div class="col-md-6"><label class="form-label">Allergies</label><textarea class="form-control" rows="2" name="allergies">{{ profile.allergies or '' }}</textarea></div>
+          <div class="col-md-6"><label class="form-label">Existing Diseases</label><textarea class="form-control" rows="2" name="diseases">{{ profile.diseases or '' }}</textarea></div>
+          <div class="col-md-6"><label class="form-label">Previous Medical History</label><textarea class="form-control" rows="2" name="previous_history">{{ profile.previous_history or '' }}</textarea></div>
+          <div class="col-md-6"><label class="form-label">Previous Surgeries</label><textarea class="form-control" rows="2" name="surgeries">{{ profile.surgeries or '' }}</textarea></div>
+          <div class="col-md-6"><label class="form-label">Current Medications</label><textarea class="form-control" rows="2" name="medications">{{ profile.medications or '' }}</textarea></div>
+          <div class="col-md-6"><label class="form-label">Family Medical History</label><textarea class="form-control" rows="2" name="family_history">{{ profile.family_history or '' }}</textarea></div>
+          <div class="col-md-6"><label class="form-label">Lifestyle (Smoking/Alcohol)</label><input class="form-control" name="lifestyle" value="{{ profile.lifestyle or '' }}"></div>
+          <div class="col-md-6"><label class="form-label">Profile Photo</label><input type="file" accept="image/*" class="form-control" name="profile_photo"></div>
+        </div>
+        <div class="mt-4 d-flex justify-content-end">
+          <button class="btn btn-primary rounded-pill px-4">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

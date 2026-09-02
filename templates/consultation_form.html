@@ -1,0 +1,86 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-xl-8">
+    <div class="glass-card">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h4 class="fw-bold mb-1">New consultation</h4>
+          <p class="text-muted mb-0">Record symptoms, diagnosis, and treatment for a patient visit.</p>
+        </div>
+        <div class="qr-card py-2 px-3">
+          <div class="small text-muted">Auto ID</div>
+          <div class="fw-bold text-primary">{{ next_consultation_id }}</div>
+        </div>
+      </div>
+      <form method="post">
+        <div class="form-section-label mb-3">Patient &amp; Visit</div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Patient ID</label>
+            <select class="form-select" name="patient_id" id="consult_patient_id" required>
+              <option value="">Select patient</option>
+              {% for p in active_patients %}
+              <option value="{{ p.patient_id }}" {% if prefill_patient_id == p.patient_id %}selected{% endif %}>{{ p.patient_id }} — {{ p.full_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Doctor</label>
+            <select class="form-select" name="doctor" required>
+              <option value="">Select doctor</option>
+              {% for doctor in doctors %}<option value="{{ doctor }}">{{ doctor }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Linked Appointment <span class="text-muted small">(optional)</span></label>
+            <select class="form-select" name="appointment_id" id="consult_appointment_id" data-preselect="{{ prefill_appointment_id }}">
+              <option value="">No linked appointment</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Consultation Date</label>
+            <input type="date" class="form-control" name="consultation_date" value="{{ today }}" required>
+          </div>
+        </div>
+
+        <div class="form-section-label mb-3 mt-4">Clinical Details</div>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Symptoms</label>
+            <textarea class="form-control" rows="2" name="symptoms" required></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Diagnosis</label>
+            <textarea class="form-control" rows="2" name="diagnosis" required></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Treatment / Advice</label>
+            <textarea class="form-control" rows="2" name="treatment" required></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Additional Notes</label>
+            <textarea class="form-control" rows="2" name="notes"></textarea>
+          </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-end gap-2">
+          <a href="{{ url_for('consultation_history') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+          <button class="btn btn-primary rounded-pill px-4">Save Consultation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="col-xl-4">
+    <div class="summary-card h-100">
+      <h5 class="fw-bold mb-3">Doctor workflow</h5>
+      <ol class="small text-muted ps-3 mb-0">
+        <li class="mb-2">Select the patient and, if applicable, the appointment this visit relates to.</li>
+        <li class="mb-2">Record symptoms, diagnosis, and treatment.</li>
+        <li class="mb-2">Save the consultation.</li>
+        <li>Generate a prescription directly from the consultation detail page.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+{% endblock %}

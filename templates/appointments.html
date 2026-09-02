@@ -1,0 +1,166 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-xl-5">
+    <div class="glass-card h-100">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h4 class="fw-bold mb-1">Book an appointment</h4>
+          <p class="text-muted mb-0">Choose a department, doctor, date, and live time slot.</p>
+        </div>
+        <div class="qr-card py-2 px-3">
+          <div class="small text-muted">Auto ID</div>
+          <div class="fw-bold text-primary">{{ next_appointment_id }}</div>
+        </div>
+      </div>
+      <form method="post">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Department</label>
+            <select class="form-select" name="department" id="department" required>
+              <option value="">Select department</option>
+              {% for department in departments %}<option value="{{ department }}">{{ department }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Doctor</label>
+            <select class="form-select" name="doctor" id="doctor" required>
+              <option value="">Select doctor</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" id="appointment_date" name="appointment_date" min="{{ min_date }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Available Time Slot</label>
+            <select class="form-select" name="time_slot" id="time_slot" required>
+              <option value="">Select time slot</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Reason for Visit</label>
+            <textarea class="form-control" rows="3" name="reason" required></textarea>
+          </div>
+        </div>
+        <div class="mt-4 d-flex justify-content-end">
+          <button class="btn btn-primary rounded-pill px-4">Confirm booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="col-xl-7">
+    <div class="summary-card h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="fw-bold mb-1">Upcoming appointments</h4>
+          <p class="text-muted mb-0">Reschedule or cancel before the appointment date.</p>
+        </div>
+      </div>
+      {% if upcoming %}
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Appointment</th>
+              <th>Date</th>
+              <th>Doctor</th>
+              <th>Status</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in upcoming %}
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ item.appointment_id }}</div>
+                <div class="small text-muted">Waiting #{{ item.waiting_position }}</div>
+              </td>
+              <td>{{ item.appointment_date.strftime('%d %b %Y') }}<div class="small text-muted">{{ item.time_slot }}</div></td>
+              <td>{{ item.doctor }}<div class="small text-muted">{{ item.department }}</div></td>
+              <td><span class="status-badge status-{{ item.status|lower }}">{{ item.status }}</span></td>
+              <td class="text-end">
+                {% if item.appointment_date > today and item.status != 'Cancelled' %}
+                <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#reschedule{{ item.id }}">Reschedule</button>
+                <form method="post" action="{{ url_for('cancel_appointment', appointment_id=item.id) }}" class="d-inline">
+                  <button class="btn btn-sm btn-outline-danger rounded-pill">Cancel</button>
+                </form>
+                {% endif %}
+              </td>
+            </tr>
+            <div class="modal fade" id="reschedule{{ item.id }}" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                  <form method="post" action="{{ url_for('reschedule_appointment', appointment_id=item.id) }}">
+                    <div class="modal-header border-0">
+                      <h5 class="modal-title fw-bold">Reschedule {{ item.appointment_id }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label class="form-label">New date</label>
+                        <input type="date" class="form-control" name="appointment_date" min="{{ min_date }}" required>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">New time slot</label>
+                        <select class="form-select" name="time_slot" required>
+                          {% for slot in slot_options %}<option value="{{ slot }}">{{ slot }}</option>{% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                      <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Close</button>
+                      <button class="btn btn-primary rounded-pill">Save changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state"><i class="bi bi-calendar-event fs-1 text-primary"></i><h5 class="mt-3">No upcoming appointments</h5></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="table-shell" id="history">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4 class="fw-bold mb-1">Appointment history</h4>
+      <p class="text-muted mb-0">Full timeline of your bookings and visit outcomes.</p>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Department</th>
+          <th>Doctor</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in history %}
+        <tr>
+          <td>{{ item.appointment_id }}</td>
+          <td>{{ item.department }}</td>
+          <td>{{ item.doctor }}</td>
+          <td>{{ item.appointment_date.strftime('%d %b %Y') }}<div class="small text-muted">{{ item.time_slot }}</div></td>
+          <td><span class="status-badge status-{{ item.status|lower }}">{{ item.status }}</span></td>
+          <td>{{ item.reason }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No appointment history available.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

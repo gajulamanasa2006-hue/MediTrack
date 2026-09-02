@@ -1,0 +1,134 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="summary-card mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <img class="profile-avatar" src="{{ url_for('static', filename=profile.profile_photo) if profile and profile.profile_photo else 'https://via.placeholder.com/96x96.png?text=MD' }}" alt="Profile photo">
+      <div>
+        <h4 class="fw-bold mb-1">{{ patient.full_name }}</h4>
+        <div class="text-muted">{{ patient.patient_id }} · {{ patient.phone }} · {{ patient.email }}</div>
+        <span class="status-badge {{ 'status-confirmed' if patient.is_active else 'status-inactive' }} mt-2 d-inline-flex">{{ 'Active' if patient.is_active else 'Inactive' }}</span>
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('new_consultation', patient_id=patient.patient_id) }}" class="btn btn-outline-primary rounded-pill px-4"><i class="bi bi-clipboard2-pulse me-1"></i>Start Consultation</a>
+      <a href="{{ url_for('new_prescription', patient_id=patient.patient_id) }}" class="btn btn-primary rounded-pill px-4"><i class="bi bi-capsule me-1"></i>New Prescription</a>
+    </div>
+  </div>
+</div>
+
+<div class="tab-shell glass-card">
+  <ul class="nav nav-tabs mb-4" id="patientTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if active_tab == 'overview' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if active_tab == 'appointments' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#appointmentsTab" type="button" role="tab">Appointments</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if active_tab == 'consultations' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#consultationsTab" type="button" role="tab">Consultations</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if active_tab == 'prescriptions' %}active{% endif %}" data-bs-toggle="tab" data-bs-target="#prescriptionsTab" type="button" role="tab">Prescriptions</button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade {% if active_tab == 'overview' %}show active{% endif %}" id="overview" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            {% if profile and profile.blood_group %}<span class="metric-pill"><i class="bi bi-droplet-half"></i>{{ profile.blood_group }}</span>{% endif %}
+            {% if profile and profile.bmi %}<span class="metric-pill"><i class="bi bi-speedometer2"></i>BMI {{ profile.bmi }}</span>{% endif %}
+            {% if profile and profile.oxygen_level %}<span class="metric-pill"><i class="bi bi-lungs"></i>SpO₂ {{ profile.oxygen_level }}%</span>{% endif %}
+          </div>
+          <dl class="row profile-grid mb-0">
+            <dt class="col-sm-4">Age / Gender</dt>
+            <dd class="col-sm-8">{{ patient.age }} / {{ patient.gender }}</dd>
+            <dt class="col-sm-4">Date of Birth</dt>
+            <dd class="col-sm-8">{{ patient.dob.strftime('%d %b %Y') }}</dd>
+            <dt class="col-sm-4">Address</dt>
+            <dd class="col-sm-8">{{ patient.address }}</dd>
+            <dt class="col-sm-4">Profile Completion</dt>
+            <dd class="col-sm-8">{{ completion }}%</dd>
+          </dl>
+        </div>
+        <div class="col-md-6">
+          <div class="glass-card p-3">
+            <div class="fw-bold mb-2">Quick medical summary</div>
+            <div class="small text-muted">Blood Pressure</div>
+            <div class="fw-semibold mb-2">{{ profile.blood_pressure if profile else 'Not added yet' }}</div>
+            <div class="small text-muted">Current Medications</div>
+            <div class="fw-semibold mb-2">{{ profile.medications if profile else 'Not added yet' }}</div>
+            <div class="small text-muted">Allergies</div>
+            <div class="fw-semibold">{{ profile.allergies if profile else 'Not added yet' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade {% if active_tab == 'appointments' %}show active{% endif %}" id="appointmentsTab" role="tabpanel">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>ID</th><th>Department</th><th>Doctor</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for item in appointments_list %}
+            <tr>
+              <td>{{ item.appointment_id }}</td>
+              <td>{{ item.department }}</td>
+              <td>{{ item.doctor }}</td>
+              <td>{{ item.appointment_date.strftime('%d %b %Y') }}<div class="small text-muted">{{ item.time_slot }}</div></td>
+              <td><span class="status-badge status-{{ item.status|lower }}">{{ item.status }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No appointments recorded.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-pane fade {% if active_tab == 'consultations' %}show active{% endif %}" id="consultationsTab" role="tabpanel">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>ID</th><th>Doctor</th><th>Date</th><th>Diagnosis</th><th class="text-end">Action</th></tr></thead>
+          <tbody>
+            {% for item in consultations_list %}
+            <tr>
+              <td>{{ item.consultation_id }}</td>
+              <td>{{ item.doctor }}</td>
+              <td>{{ item.consultation_date.strftime('%d %b %Y') }}</td>
+              <td>{{ item.diagnosis }}</td>
+              <td class="text-end"><a href="{{ url_for('consultation_detail', consultation_id=item.consultation_id) }}" class="btn btn-sm btn-outline-primary rounded-pill">View</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No consultations recorded.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-pane fade {% if active_tab == 'prescriptions' %}show active{% endif %}" id="prescriptionsTab" role="tabpanel">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>ID</th><th>Doctor</th><th>Date</th><th>Medicines</th><th class="text-end">Action</th></tr></thead>
+          <tbody>
+            {% for item in prescriptions_list %}
+            <tr>
+              <td>{{ item.prescription_id }}</td>
+              <td>{{ item.doctor }}</td>
+              <td>{{ item.prescription_date.strftime('%d %b %Y') }}</td>
+              <td>{{ item.items|length }} item{{ 's' if item.items|length != 1 else '' }}</td>
+              <td class="text-end"><a href="{{ url_for('prescription_detail', prescription_id=item.prescription_id) }}" class="btn btn-sm btn-outline-primary rounded-pill">View</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No prescriptions recorded.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

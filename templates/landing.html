@@ -1,0 +1,304 @@
+{% extends 'layout.html' %}
+{% block auth_content %}
+<nav class="navbar navbar-expand-lg landing-navbar py-3">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{{ url_for('index') }}">
+      <span class="brand-badge" style="width:40px;height:40px;border-radius:12px;"><i class="bi bi-heart-pulse-fill"></i></span>
+      MediTrack
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="landingNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="#departments">Departments</a></li>
+        <li class="nav-item"><a class="nav-link" href="#doctors">Doctors</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact Us</a></li>
+        <li class="nav-item ms-lg-2">
+          <a class="btn btn-outline-danger rounded-pill px-3" href="{{ url_for('ambulance_request') }}"><i class="bi bi-truck me-1"></i>Ambulance</a>
+        </li>
+        <li class="nav-item ms-lg-2">
+          <a class="btn btn-primary rounded-pill px-4" href="{{ url_for('login') }}">Patient / Staff Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="landing-hero" id="home">
+  <div class="container position-relative">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <span class="badge bg-white text-primary rounded-pill px-3 py-2 mb-3 fw-semibold">Integrated Patient Care Management System</span>
+        <h1 class="display-4 fw-bold mb-3">Compassionate care, powered by a calmer digital hospital experience.</h1>
+        <p class="lead opacity-90 mb-4">MediTrack brings patient registration, appointments, consultations, prescriptions, and 24/7 emergency response together in one secure platform.</p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{{ url_for('register') }}" class="btn btn-light btn-lg rounded-pill px-4 fw-semibold text-primary">Register as Patient</a>
+          <a href="{{ url_for('ambulance_request') }}" class="btn btn-danger btn-lg rounded-pill px-4 fw-semibold"><i class="bi bi-truck me-2"></i>Emergency Ambulance</a>
+        </div>
+        <div class="row mt-5 g-3">
+          <div class="col-4"><div class="stat-block text-start"><div class="value">24/7</div><small class="opacity-75">Emergency care</small></div></div>
+          <div class="col-4"><div class="stat-block text-start"><div class="value">5</div><small class="opacity-75">Specialist departments</small></div></div>
+          <div class="col-4"><div class="stat-block text-start"><div class="value">10+</div><small class="opacity-75">Expert doctors</small></div></div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-image-stack">
+          <img class="hero-image-main" src="https://images.pexels.com/photos/9741531/pexels-photo-9741531.jpeg?auto=compress&cs=tinysrgb&w=900&h=1100&fit=crop" alt="Modern hospital building">
+          <div class="hero-image-badge">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="bi bi-shield-check text-primary fs-5"></i>
+              <span class="fw-bold">JWT-secured records</span>
+            </div>
+            <small class="text-muted">Every access logged &amp; audited</small>
+          </div>
+          <img class="hero-image-secondary" src="https://images.pexels.com/photos/5327579/pexels-photo-5327579.jpeg?auto=compress&cs=tinysrgb&w=500&h=380&fit=crop" alt="Doctor with stethoscope">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="landing-section" id="about">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="section-eyebrow mb-2">About Us</div>
+        <h2 class="fw-bold mb-3">A modern care team built around you.</h2>
+        <p class="text-muted">MediTrack Hospital combines experienced clinicians with a secure digital platform so every patient's journey — from registration to prescription — is tracked, protected, and easy to follow. Our system logs every access to medical records and flags suspicious activity automatically, so your data stays private and accountable.</p>
+        <div class="row g-3 mt-2">
+          <div class="col-6">
+            <div class="glass-card p-3 h-100">
+              <div class="fw-bold mb-1"><i class="bi bi-lock-fill text-primary me-1"></i>Secure by design</div>
+              <small class="text-muted">JWT authentication, role-based access, and full audit logging.</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="glass-card p-3 h-100">
+              <div class="fw-bold mb-1"><i class="bi bi-bell-fill text-primary me-1"></i>Always informed</div>
+              <small class="text-muted">Reminders for appointments, prescriptions, and follow-ups.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <img class="about-image mb-3" src="https://images.pexels.com/photos/36078152/pexels-photo-36078152.jpeg?auto=compress&cs=tinysrgb&w=900&h=520&fit=crop" alt="Hospital campus at sunset">
+        <div class="row g-3">
+          <div class="col-6"><div class="stats-card text-center"><div class="stats-icon mx-auto mb-2"><i class="bi bi-people"></i></div><h4 class="fw-bold mb-0">Patient-first</h4><small class="text-muted">Care coordinated around you</small></div></div>
+          <div class="col-6"><div class="stats-card text-center"><div class="stats-icon mx-auto mb-2"><i class="bi bi-clock-history"></i></div><h4 class="fw-bold mb-0">Always-on</h4><small class="text-muted">24/7 emergency response</small></div></div>
+          <div class="col-6"><div class="stats-card text-center"><div class="stats-icon mx-auto mb-2"><i class="bi bi-shield-lock"></i></div><h4 class="fw-bold mb-0">Audited</h4><small class="text-muted">Every access logged</small></div></div>
+          <div class="col-6"><div class="stats-card text-center"><div class="stats-icon mx-auto mb-2"><i class="bi bi-heart-pulse"></i></div><h4 class="fw-bold mb-0">Connected</h4><small class="text-muted">One record, every visit</small></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="landing-section landing-section-alt" id="services">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-eyebrow mb-2">What We Offer</div>
+      <h2 class="fw-bold">Our services</h2>
+      <p class="text-muted">Everything you need for a smoother care journey, in one place.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon mb-3"><i class="bi bi-person-plus"></i></div>
+          <h5 class="fw-bold">Patient Registration</h5>
+          <p class="text-muted small mb-0">Quick, secure sign-up with an auto-generated Patient ID and QR profile card.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon mb-3"><i class="bi bi-calendar2-check"></i></div>
+          <h5 class="fw-bold">Appointment Booking</h5>
+          <p class="text-muted small mb-0">Live doctor and time-slot availability with automatic double-booking prevention.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon mb-3"><i class="bi bi-clipboard2-pulse"></i></div>
+          <h5 class="fw-bold">Consultations</h5>
+          <p class="text-muted small mb-0">Symptoms, diagnosis, and treatment recorded in a professional medical-record format.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon mb-3"><i class="bi bi-capsule"></i></div>
+          <h5 class="fw-bold">Prescriptions</h5>
+          <p class="text-muted small mb-0">Multi-medicine prescriptions with print-ready, pharmacy-friendly output.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon mb-3"><i class="bi bi-bell"></i></div>
+          <h5 class="fw-bold">Smart Notifications</h5>
+          <p class="text-muted small mb-0">Reminders for upcoming visits, follow-ups, and new prescriptions.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="service-card">
+          <div class="service-icon mb-3"><i class="bi bi-truck"></i></div>
+          <h5 class="fw-bold">Ambulance Dispatch</h5>
+          <p class="text-muted small mb-0">One-tap emergency requests with live step-by-step dispatch tracking.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="landing-section" id="departments">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-eyebrow mb-2">Specialist Care</div>
+      <h2 class="fw-bold">Our departments</h2>
+      <p class="text-muted">Book directly into the department that fits your need.</p>
+    </div>
+    <div class="row g-4">
+      {% set dept_icons = {'General Medicine': 'bi-heart-pulse', 'Cardiology': 'bi-activity', 'Neurology': 'bi-cpu', 'Orthopedics': 'bi-bandaid', 'Dermatology': 'bi-droplet-half'} %}
+      {% for dept, doctors in departments.items() %}
+      <div class="col-md-6 col-lg-4">
+        <div class="dept-card">
+          <div class="dept-icon mb-3"><i class="bi {{ dept_icons.get(dept, 'bi-hospital') }}"></i></div>
+          <h5 class="fw-bold">{{ dept }}</h5>
+          <p class="text-muted small mb-2">{{ doctors|length }} specialist{{ 's' if doctors|length != 1 else '' }} available</p>
+          <div class="d-flex flex-wrap gap-2">
+            {% for doc in doctors %}<span class="metric-pill">{{ doc }}</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="landing-section landing-section-alt" id="doctors">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-eyebrow mb-2">Meet Our Team</div>
+      <h2 class="fw-bold">Our doctors</h2>
+      <p class="text-muted">Experienced specialists across every department.</p>
+    </div>
+    <div class="row g-4">
+      {% set doctor_photos = [
+        'https://images.pexels.com/photos/19963130/pexels-photo-19963130.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/6129574/pexels-photo-6129574.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/18828738/pexels-photo-18828738.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/4989179/pexels-photo-4989179.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/19218034/pexels-photo-19218034.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/19547592/pexels-photo-19547592.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/19131217/pexels-photo-19131217.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/18828740/pexels-photo-18828740.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/19963167/pexels-photo-19963167.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+        'https://images.pexels.com/photos/7578806/pexels-photo-7578806.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+      ] %}
+      {% set doctor_counter = namespace(i=0) %}
+      {% for dept, doctors in departments.items() %}
+        {% for doc in doctors %}
+        <div class="col-md-6 col-lg-3">
+          <div class="doctor-card text-center">
+            <img class="doctor-photo mx-auto mb-3" src="{{ doctor_photos[doctor_counter.i % doctor_photos|length] }}" alt="{{ doc }}">
+            <h6 class="fw-bold mb-1">{{ doc }}</h6>
+            <div class="text-muted small">{{ dept }}</div>
+          </div>
+        </div>
+        {% set doctor_counter.i = doctor_counter.i + 1 %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="landing-section" id="emergency">
+  <div class="container">
+    <div class="emergency-strip d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
+      <img class="emergency-image d-none d-lg-block" src="https://images.pexels.com/photos/5364345/pexels-photo-5364345.jpeg?auto=compress&cs=tinysrgb&w=360&h=240&fit=crop" alt="Ambulances ready for dispatch">
+      <div>
+        <h3 class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i>Medical Emergency?</h3>
+        <p class="mb-0 opacity-90">Request an ambulance now and track its dispatch status live — no login required.</p>
+      </div>
+      <a href="{{ url_for('ambulance_request') }}" class="btn btn-light btn-lg rounded-pill px-4 fw-bold text-danger">Request Ambulance Now</a>
+    </div>
+  </div>
+</section>
+
+<section class="landing-section landing-section-alt" id="contact">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5">
+        <div class="section-eyebrow mb-2">Get In Touch</div>
+        <h2 class="fw-bold mb-3">Contact us</h2>
+        <p class="text-muted mb-4">Have a question about care, billing, or the platform? Send us a message and our team will follow up.</p>
+        <ul class="list-unstyled summary-list">
+          <li class="d-flex gap-2"><i class="bi bi-geo-alt-fill text-primary mt-1"></i><span>221B Wellness Avenue, MedCity, 500001</span></li>
+          <li class="d-flex gap-2"><i class="bi bi-telephone-fill text-primary mt-1"></i><span>+1 (555) 010-2026 — Reception</span></li>
+          <li class="d-flex gap-2"><i class="bi bi-truck text-primary mt-1"></i><span>+1 (555) 010-9111 — Emergency Ambulance</span></li>
+          <li class="d-flex gap-2"><i class="bi bi-envelope-fill text-primary mt-1"></i><span>care@meditrack.example</span></li>
+        </ul>
+      </div>
+      <div class="col-lg-7">
+        <div class="glass-card p-4">
+          <form method="post" action="{{ url_for('contact_submit') }}">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Your Name</label>
+                <input class="form-control" name="name" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-control" name="email" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Message</label>
+                <textarea class="form-control" rows="4" name="message" required></textarea>
+              </div>
+            </div>
+            <button class="btn btn-primary rounded-pill px-4 mt-4">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer-dark">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center gap-2 fw-bold text-white fs-5 mb-2">
+          <span class="brand-badge" style="width:36px;height:36px;border-radius:10px;"><i class="bi bi-heart-pulse-fill"></i></span>
+          MediTrack
+        </div>
+        <p class="small mb-0">Integrated Patient Care Management System — secure, connected, always on.</p>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="fw-bold text-white mb-2 small text-uppercase">Explore</div>
+        <ul class="list-unstyled small">
+          <li class="mb-1"><a href="#about">About Us</a></li>
+          <li class="mb-1"><a href="#services">Services</a></li>
+          <li class="mb-1"><a href="#departments">Departments</a></li>
+          <li class="mb-1"><a href="#doctors">Doctors</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="fw-bold text-white mb-2 small text-uppercase">Portal</div>
+        <ul class="list-unstyled small">
+          <li class="mb-1"><a href="{{ url_for('login') }}">Sign In</a></li>
+          <li class="mb-1"><a href="{{ url_for('register') }}">Register</a></li>
+          <li class="mb-1"><a href="{{ url_for('ambulance_request') }}">Ambulance</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <div class="fw-bold text-white mb-2 small text-uppercase">Emergency</div>
+        <p class="small mb-0"><i class="bi bi-truck me-1"></i>+1 (555) 010-9111 — Available 24/7 for ambulance dispatch.</p>
+      </div>
+    </div>
+    <hr class="border-secondary my-4">
+    <div class="text-center small">&copy; 2026 MediTrack. Built for demonstration purposes.</div>
+  </div>
+</footer>
+{% endblock %}

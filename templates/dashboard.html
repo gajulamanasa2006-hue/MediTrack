@@ -1,0 +1,158 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-6 col-xl-3">
+    <div class="stats-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="text-muted small mb-2">Total Appointments</div>
+          <h3 class="fw-bold mb-0">{{ stats.total_appointments }}</h3>
+        </div>
+        <div class="stats-icon"><i class="bi bi-calendar-week"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="stats-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="text-muted small mb-2">Upcoming</div>
+          <h3 class="fw-bold mb-0">{{ stats.upcoming_appointments }}</h3>
+        </div>
+        <div class="stats-icon"><i class="bi bi-hourglass-split"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="stats-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="text-muted small mb-2">Completed</div>
+          <h3 class="fw-bold mb-0">{{ stats.completed_appointments }}</h3>
+        </div>
+        <div class="stats-icon"><i class="bi bi-check2-circle"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="stats-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="text-muted small mb-2">Profile Completion</div>
+          <h3 class="fw-bold mb-0">{{ completion }}%</h3>
+        </div>
+        <div class="stats-icon"><i class="bi bi-clipboard2-pulse"></i></div>
+      </div>
+      <div class="progress mt-3" style="height:10px;"><div class="progress-bar bg-primary" style="width: {{ completion }}%"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <div class="summary-card h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="fw-bold mb-1">Next appointment</h5>
+          <p class="text-muted mb-0">Your nearest confirmed care interaction.</p>
+        </div>
+        <a href="{{ url_for('appointments') }}" class="btn btn-outline-primary rounded-pill">Manage appointments</a>
+      </div>
+      {% if next_appointment %}
+      <div class="row g-3 align-items-center">
+        <div class="col-md-8">
+          <h4 class="fw-bold text-primary mb-1">{{ next_appointment.department }}</h4>
+          <div class="mb-2">{{ next_appointment.doctor }}</div>
+          <div class="text-muted small">{{ next_appointment.appointment_date.strftime('%d %b %Y') }} at {{ next_appointment.time_slot }}</div>
+          <div class="mt-3 d-flex flex-wrap gap-2">
+            <span class="metric-pill"><i class="bi bi-upc-scan"></i>{{ next_appointment.appointment_id }}</span>
+            <span class="metric-pill"><i class="bi bi-people"></i>Waiting position {{ next_appointment.waiting_position }}</span>
+            <span class="status-badge status-{{ next_appointment.status|lower }}">{{ next_appointment.status }}</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="qr-card h-100 d-flex flex-column justify-content-center">
+            <div class="small text-muted mb-1">Reason for visit</div>
+            <div class="fw-semibold">{{ next_appointment.reason }}</div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="bi bi-calendar2-plus fs-1 text-primary"></i>
+        <h5 class="mt-3">No upcoming appointments</h5>
+        <p class="text-muted mb-3">Book your next visit in seconds with live slot availability.</p>
+        <a href="{{ url_for('appointments') }}" class="btn btn-primary rounded-pill">Book appointment</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-xl-4">
+    <div class="quick-card h-100">
+      <h5 class="fw-bold mb-3">Quick access</h5>
+      <div class="d-grid gap-2">
+        <a href="{{ url_for('profile') }}" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-person-badge me-2"></i>My Profile</a>
+        <a href="{{ url_for('appointments') }}" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-calendar2-plus me-2"></i>Book Appointment</a>
+        <a href="{{ url_for('appointments') }}#history" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-clock-history me-2"></i>Appointment History</a>
+        <a href="{{ url_for('my_consultations') }}" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-clipboard2-pulse me-2"></i>My Consultations</a>
+        <a href="{{ url_for('my_prescriptions') }}" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-capsule me-2"></i>My Prescriptions</a>
+        <a href="{{ url_for('profile') }}#profile-form" class="btn btn-outline-primary rounded-pill text-start"><i class="bi bi-pencil-square me-2"></i>Update Profile</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger rounded-pill text-start"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+      </div>
+      <hr>
+      <div class="small text-muted mb-2">Recently registered patients</div>
+      {% for patient in recent_patients %}
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+          <div>
+            <div class="fw-semibold">{{ patient.full_name }}</div>
+            <small class="text-muted">{{ patient.patient_id }}</small>
+          </div>
+          <small class="text-muted">{{ patient.created_at.strftime('%d %b') }}</small>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mt-1">
+  <div class="col-12">
+    <h5 class="fw-bold mb-3">System overview</h5>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card">
+      <div class="text-muted small mb-2">Total Patients</div>
+      <h4 class="fw-bold mb-0">{{ milestone2_stats.total_patients }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card">
+      <div class="text-muted small mb-2">Total Appointments</div>
+      <h4 class="fw-bold mb-0">{{ milestone2_stats.total_appointments }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card">
+      <div class="text-muted small mb-2">Today's Appointments</div>
+      <h4 class="fw-bold mb-0">{{ milestone2_stats.todays_appointments }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card">
+      <div class="text-muted small mb-2">Total Consultations</div>
+      <h4 class="fw-bold mb-0">{{ milestone2_stats.total_consultations }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card">
+      <div class="text-muted small mb-2">Total Prescriptions</div>
+      <h4 class="fw-bold mb-0">{{ milestone2_stats.total_prescriptions }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 col-xl-2">
+    <div class="stats-card">
+      <div class="text-muted small mb-2">Upcoming Appointments</div>
+      <h4 class="fw-bold mb-0">{{ milestone2_stats.upcoming_appointments }}</h4>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="glass-card">
+  <div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+      <h4 class="fw-bold mb-1">Prescription {{ prescription.prescription_id }}</h4>
+      <p class="text-muted mb-0">{{ prescription.prescription_date.strftime('%d %b %Y') }} · {{ prescription.doctor }}</p>
+    </div>
+    <a href="{{ url_for('prescription_print', prescription_id=prescription.prescription_id) }}" target="_blank" class="btn btn-primary rounded-pill px-4"><i class="bi bi-printer me-1"></i>Print Prescription</a>
+  </div>
+
+  <dl class="row profile-grid mb-4">
+    <dt class="col-sm-3">Patient</dt>
+    <dd class="col-sm-9">{{ prescription.patient.full_name }} <span class="text-muted">({{ prescription.patient_id }})</span></dd>
+
+    <dt class="col-sm-3">Linked Consultation</dt>
+    <dd class="col-sm-9">
+      {% if prescription.consultation_id %}
+      <a href="{{ url_for('consultation_detail', consultation_id=prescription.consultation_id) }}">{{ prescription.consultation_id }}</a>
+      {% else %}Not linked to a consultation{% endif %}
+    </dd>
+  </dl>
+
+  <div class="form-section-label mb-3">Medicines</div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Medicine</th>
+          <th>Dosage</th>
+          <th>Frequency</th>
+          <th>Duration</th>
+          <th>Instructions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for med in prescription.items %}
+        <tr>
+          <td class="fw-semibold">{{ med.medicine_name }}</td>
+          <td>{{ med.dosage }}</td>
+          <td>{{ med.frequency }}</td>
+          <td>{{ med.duration }}</td>
+          <td>{{ med.instructions or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
